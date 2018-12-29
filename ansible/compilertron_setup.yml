@@ -1,0 +1,7 @@
+---
+- name: run setup role
+  hosts: all
+  tasks:
+  - import_role:
+     name: setup
+    become: true

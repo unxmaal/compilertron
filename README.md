@@ -14,17 +14,17 @@ Run 'vagrant up' to create and provision the VM.
 
 ## Remaining
 
-# copy irix /lib32 /usr/lib32 /usr/include to /opt/irix-root
-# build binutils-2.17
+* copy irix /lib32 /usr/lib32 /usr/include to /opt/irix-root
+* build binutils-2.17
 ```
 ./configure --target=mips-sgi-irix6.5 --prefix=/opt/irix-binutils --with-sysroot=/opt/irix-root --enable-werror=no
 make 
 make install
 ```
 
-# add /opt/irix-binutils/bin to your path
-# create a separate build directory for gcc 4.7.4 and enter it
-# run these commands - note how the configure script is run from other directory:
+* add /opt/irix-binutils/bin to your path
+* create a separate build directory for gcc 4.7.4 and enter it
+* run these commands - note how the configure script is run from other directory:
 ```
 export AS_FOR_TARGET="mips-sgi-irix6.5-as"
 export LD_FOR_TARGET="mips-sgi-irix6.5-ld"
@@ -38,9 +38,6 @@ export target_configargs="--enable-libstdcxx-threads=no"
 make
 ```
 
-# creating gcc info file may fail - in that case, just touch gcc/doc/gcc.info and restart make
-# libstdc++ may have a couple of issues building but it is buildable
-# please tell when you hit them, they can be circumvented by slightly
-# editing c++config.h (possibly this could be done in crossconfig.m4
-# already)
-#
+* creating gcc info file may fail - in that case, just touch gcc/doc/gcc.info and restart make
+* libstdc++ may have a couple of issues building but it is buildable
+* please tell when you hit them, they can be circumvented by slightly editing c++config.h (possibly this could be done in crossconfig.m4 # already)

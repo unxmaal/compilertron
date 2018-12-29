@@ -1,0 +1,4 @@
+- name: Fetch gcc
+  git:
+    repo: 'https://github.com/onre/gcc.git'
+    dest: /opt/gcc

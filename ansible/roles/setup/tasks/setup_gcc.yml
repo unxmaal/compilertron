@@ -7,9 +7,14 @@
   get_url:
     url: "{{ irix_root }}"
     dest: "/opt/{{  irix_root | urlsplit('path') | basename }}"
+- name: create irix-root
+  file:
+    path: /opt/irix-root
+    state: directory
 - name: Extracting irix-root
   unarchive:
     src: "/opt/{{  irix_root | urlsplit('path') | basename }}"
     dest: /opt/irix-root
     copy: no
-    creates: /opt/irix-root
+    creates: /opt/irix-root/usr/lib32/yaccpar
+

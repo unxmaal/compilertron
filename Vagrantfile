@@ -3,8 +3,8 @@
 # Change these settings to match your environment
 #####
 gcc_repo = "https://github.com/onre/gcc.git"
-
-# FTP urls
+gcc_repo_branch = "gcc-4_7-irix"
+irix_root = "http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2"
 
 ##### 
 # end of settings
@@ -38,7 +38,9 @@ Vagrant.configure("2") do |config|
     ansible.verbose = "v"
     ansible.playbook = "ansible/compilertron_setup.yml"
     ansible.extra_vars = {
-        gcc_repo: gcc_repo
+        gcc_repo: gcc_repo,
+        gcc_repo_branch: gcc_repo_branch,
+        irix_root: irix_root
     }
   end
 end

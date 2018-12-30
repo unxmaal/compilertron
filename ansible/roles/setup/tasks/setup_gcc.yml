@@ -1,4 +1,15 @@
 - name: Fetch gcc
   git:
-    repo: 'https://github.com/onre/gcc.git'
+    repo: "{{ gcc_repo }}"
     dest: /opt/gcc
+    version: "{{ gcc_repo_branch }}"
+- name: Fetch irix-root
+  get_url:
+    url: "{{ irix_root }}"
+    dest: "/opt/{{  irix_root | urlsplit('path') | basename }}"
+- name: Extracting irix-root
+  unarchive:
+    src: "/opt/{{  irix_root | urlsplit('path') | basename }}"
+    dest: /opt/irix-root
+    copy: no
+    creates: /opt/irix-root

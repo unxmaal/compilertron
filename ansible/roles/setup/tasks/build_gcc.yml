@@ -1,0 +1,11 @@
+- name: Get the gcc builder script
+  copy:
+    src: files/build_gcc.sh
+    dest: /opt/build_gcc.sh
+    owner: root
+    group: root
+    mode: 0755
+- name: Run the gcc builder script
+  command: "./build_gcc.sh"
+  args:
+    chdir: "/opt"

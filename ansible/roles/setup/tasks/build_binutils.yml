@@ -1,0 +1,33 @@
+- name: Fetch binutils
+  get_url:
+    url: "{{ binutils }}"
+    dest: "/opt/{{  binutils | urlsplit('path') | basename }}"
+- name: create binutils source dir
+  file:
+    path: /opt/src/binutils
+    state: directory
+- name: create binutils dir
+  file:
+    path: /opt/binutils
+    state: directory
+- name: Extracting binutils
+  unarchive:
+    src: "/opt/{{  binutils | urlsplit('path') | basename }}"
+    dest: /opt/src/binutils
+    copy: no
+- name: configure binutils
+  command: "./configure --target=mips-sgi-irix6.5 --prefix=/opt/binutils --with-sysroot=/opt/irix-root --enable-werror=no"
+  args:
+    chdir: "/opt/src/binutils/binutils-2.17"
+- name: make binutils
+  command: "make"
+  args:
+    chdir: "/opt/src/binutils/binutils-2.17"
+- name: configure binutils
+  command: "make install"
+  args:
+    chdir: "/opt/src/binutils/binutils-2.17"
+- name: cleanup binutils
+  command: "make clean"
+  args:
+    chdir: "/opt/src/binutils/binutils-2.17"

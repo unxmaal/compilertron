@@ -1,7 +1,7 @@
 - name: Fetch gcc
   git:
     repo: "{{ gcc_repo }}"
-    dest: /opt/gcc
+    dest: /opt/src/gcc
     version: "{{ gcc_repo_branch }}"
 - name: Fetch irix-root
   get_url:

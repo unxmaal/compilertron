@@ -6,6 +6,7 @@
 gcc_repo =          "https://github.com/onre/gcc.git"
 gcc_repo_branch =   "gcc-4_7-irix"
 irix_root =         "http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2"
+binutils =          "https://mirrors.tripadvisor.com/gnu/binutils/binutils-2.17a.tar.bz2"
 
 Target_Base_Box =   "debian/contrib-jessie64"
 Target_Version =    "8.11.0"
@@ -56,7 +57,8 @@ Vagrant.configure("2") do |config|
     ansible.extra_vars = {
         gcc_repo: gcc_repo,
         gcc_repo_branch: gcc_repo_branch,
-        irix_root: irix_root
+        irix_root: irix_root,
+        binutils: binutils
     }
   end
 end

@@ -15,19 +15,27 @@
     src: "/opt/{{  binutils | urlsplit('path') | basename }}"
     dest: /opt/src/binutils
     copy: no
+    creates: "/opt/src/binutils/binutils-2.17/libtool.m4"
+- name: determine if we've already built this before
+  stat: path=/opt/binutils/bin/mips-sgi-irix6.5-as
+  register: binutils_built
 - name: configure binutils
   command: "./configure --target=mips-sgi-irix6.5 --prefix=/opt/binutils --with-sysroot=/opt/irix-root --enable-werror=no"
   args:
     chdir: "/opt/src/binutils/binutils-2.17"
+  when: binutils_built.stat.exists == False
 - name: make binutils
   command: "make"
   args:
     chdir: "/opt/src/binutils/binutils-2.17"
+  when: binutils_built.stat.exists == False
 - name: configure binutils
   command: "make install"
   args:
     chdir: "/opt/src/binutils/binutils-2.17"
+  when: binutils_built.stat.exists == False
 - name: cleanup binutils
   command: "make clean"
   args:
     chdir: "/opt/src/binutils/binutils-2.17"
+  when: binutils_built.stat.exists == False

@@ -5,7 +5,14 @@
     owner: root
     group: root
     mode: 0755
+- name: Fix missing doc dumbness
+  dest: doc/gfdl.7.T$$
 - name: Run the gcc builder script
   command: "./build_gcc.sh"
   args:
     chdir: "/opt"
+- name: Create symlink
+  file:
+    src: /opt/binutils/mips-sgi-irix6.5/bin
+    dest: /opt/gcc/mips-sgi-irix6.5
+    state: link

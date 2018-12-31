@@ -5,6 +5,6 @@
 # Set up gcc
 - import_tasks: setup_gcc.yml
 # build binutils 
-#- import_tasks: build_binutils.yml
+- import_tasks: build_binutils.yml
 # build gcc
-#- import_tasks: build_gcc.yml
+- import_tasks: build_gcc.yml

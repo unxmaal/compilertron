@@ -9,9 +9,23 @@
 - name: Extracting gcc
   unarchive:
     src: "/opt/src/{{  gcc_zip | urlsplit('path') | basename }}"
-    dest: "/opt/src/gcc"
+    dest: "/opt/src"
     copy: no
     creates: "/opt/src/gcc/ltgcc.m4"
+
+- name: stat poorly-named gcc dir
+  stat: path=/opt/src/gcc-gcc-4_7-irix
+  register: dumb_gcc_path
+
+- name: Remove old gcc src
+  file: 
+    path: /opt/src/gcc
+    state: absent
+  when: dumb_gcc_path.stat.exists
+
+- name: Fix gcc path
+  command: mv /opt/src/gcc-gcc-4_7-irix /opt/src/gcc
+  when: dumb_gcc_path.stat.exists
 
 - name: create empty gcc-build dir
   file:

@@ -3,6 +3,10 @@
     repo: "{{ gcc_repo }}"
     dest: /opt/src/gcc
     version: "{{ gcc_repo_branch }}"
+- name: create empty gcc-build dir
+  file:
+    path: /opt/src/gcc-build
+    state: directory
 - name: Fetch irix-root
   get_url:
     url: "{{ irix_root }}"

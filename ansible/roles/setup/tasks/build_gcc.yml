@@ -5,8 +5,6 @@
     owner: root
     group: root
     mode: 0755
-- name: Fix missing doc dumbness
-  dest: doc/gfdl.7.T$$
 - name: Run the gcc builder script
   command: "./build_gcc.sh"
   args:

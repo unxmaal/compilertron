@@ -1,8 +1,17 @@
 - name: Fetch gcc
-  git:
-    repo: "{{ gcc_repo }}"
+  get_url:
+    url: "{{ gcc_zip }}"
+    dest: /opt/src
+- name: Extracting gcc
+  unarchive:
+    src: "/opt/{{  gcc_zip | urlsplit('path') | basename }}"
     dest: /opt/src/gcc
-    version: "{{ gcc_repo_branch }}"
+    copy: no
+    creates: /opt/src/gcc/ltgcc.m4
+- name: create gcc-build dir
+  file:
+    path: /opt/build/gcc
+    state: directory
 - name: Fetch irix-root
   get_url:
     url: "{{ irix_root }}"

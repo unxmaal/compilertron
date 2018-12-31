@@ -3,8 +3,7 @@
 # Change these settings to match your environment
 #####
 
-gcc_repo =          "https://github.com/onre/gcc.git"
-gcc_repo_branch =   "gcc-4_7-irix"
+gcc_zip =          "https://github.com/onre/gcc/archive/gcc-4_7-irix.zip"
 irix_root =         "http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2"
 binutils =          "https://mirrors.tripadvisor.com/gnu/binutils/binutils-2.17a.tar.bz2"
 
@@ -50,13 +49,15 @@ end
 #
 # Provision the new box with Ansible plays
 Vagrant.configure("2") do |config|
-  if Vagrant::Util::Platform.windows? 
+  if Vagrant::Util::Platform.windows?
+   config.vm.provision :shell do |shell|
+      shell.inline = "sudo apt-get -y install wget curl"
+    end 
     config.vm.provision :guest_ansible do |ansible|
       ansible.verbose = "v"
       ansible.playbook = "ansible/compilertron_setup.yml"
       ansible.extra_vars = {
-          gcc_repo: gcc_repo,
-          gcc_repo_branch: gcc_repo_branch,
+          gcc_zip: gcc_zip,
           irix_root: irix_root,
           binutils: binutils
       }
@@ -66,8 +67,7 @@ Vagrant.configure("2") do |config|
       ansible.verbose = "v"
       ansible.playbook = "ansible/compilertron_setup.yml"
       ansible.extra_vars = {
-          gcc_repo: gcc_repo,
-          gcc_repo_branch: gcc_repo_branch,
+          gcc_zip: gcc_zip,
           irix_root: irix_root,
           binutils: binutils
       }

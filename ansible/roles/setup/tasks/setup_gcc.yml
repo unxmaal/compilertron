@@ -1,29 +1,61 @@
 - name: Fetch gcc
   get_url:
     url: "{{ gcc_zip }}"
-    dest: /opt/src
+    dest: "/opt/src/gcc-4_7-irix.zip"
+
+- debug:
+    msg: "The next task Extracting gcc will take 10-20 min......."
+
 - name: Extracting gcc
   unarchive:
-    src: "/opt/{{  gcc_zip | urlsplit('path') | basename }}"
-    dest: /opt/src/gcc
+    src: "/opt/src/{{  gcc_zip | urlsplit('path') | basename }}"
+    dest: "/opt/src/gcc"
     copy: no
-    creates: /opt/src/gcc/ltgcc.m4
-- name: create gcc-build dir
+    creates: "/opt/src/gcc/ltgcc.m4"
+
+- name: create empty gcc-build dir
   file:
-    path: /opt/build/gcc
+    path: "/opt/src/gcc-build"
     state: directory
+
 - name: Fetch irix-root
   get_url:
     url: "{{ irix_root }}"
     dest: "/opt/{{  irix_root | urlsplit('path') | basename }}"
+
 - name: create irix-root
   file:
-    path: /opt/irix-root
+    path: "/opt/irix-root"
     state: directory
+
 - name: Extracting irix-root
   unarchive:
     src: "/opt/{{  irix_root | urlsplit('path') | basename }}"
-    dest: /opt/irix-root
+    dest: "/opt/irix-root"
     copy: no
-    creates: /opt/irix-root/usr/lib32/yaccpar
+    creates: "/opt/irix-root/usr/lib32/yaccpar"
 
+- name: Build Fix 1 - 
+  file:
+    path: "/opt/gcc/mips-sgi-irix6.5"
+    state: directory
+
+- name: Build Fix 2 - symlink for includes
+  file:
+    src: "/opt/irix-root/usr/include"
+    dest: "/opt/gcc/mips-sgi-irix6.5/sys-include"
+    state: link
+
+- name: Build Fix 3 - symlink for /usr/lib32
+  file:
+    src: "/opt/irix-root/usr/lib32"
+    dest: "/usr/lib32"
+    state: link
+
+- name: Build Fix 3 - replace stdlib_core.h
+  copy:
+    src: "files/stdlib_core.h"
+    dest: "/opt/gcc/mips-sgi-irix6.5/sys-include/internal"
+    owner: root
+    group: root
+    mode: 0755

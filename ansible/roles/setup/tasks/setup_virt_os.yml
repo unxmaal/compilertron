@@ -3,9 +3,9 @@
   hostname: 
     name: compilertron
 
-- apt_repository:
-    repo: deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main
-    state: present
+#- apt_repository:
+#    repo: deb http://ppa.launchpad.net/ansible/ansible/ubuntu devel main
+#    state: present
 
 - name: Add an apt key 
   apt_key:
@@ -27,3 +27,4 @@
     - parted
     - texinfo 
     - git 
+    - unzip

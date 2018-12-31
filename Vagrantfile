@@ -50,15 +50,27 @@ end
 #
 # Provision the new box with Ansible plays
 Vagrant.configure("2") do |config|
-
-  config.vm.provision "ansible" do |ansible|
-    ansible.verbose = "v"
-    ansible.playbook = "ansible/compilertron_setup.yml"
-    ansible.extra_vars = {
-        gcc_repo: gcc_repo,
-        gcc_repo_branch: gcc_repo_branch,
-        irix_root: irix_root,
-        binutils: binutils
-    }
+  if Vagrant::Util::Platform.windows? 
+    config.vm.provision :guest_ansible do |ansible|
+      ansible.verbose = "v"
+      ansible.playbook = "ansible/compilertron_setup.yml"
+      ansible.extra_vars = {
+          gcc_repo: gcc_repo,
+          gcc_repo_branch: gcc_repo_branch,
+          irix_root: irix_root,
+          binutils: binutils
+      }
+    end
+  else
+    config.vm.provision "ansible" do |ansible|
+      ansible.verbose = "v"
+      ansible.playbook = "ansible/compilertron_setup.yml"
+      ansible.extra_vars = {
+          gcc_repo: gcc_repo,
+          gcc_repo_branch: gcc_repo_branch,
+          irix_root: irix_root,
+          binutils: binutils
+      }
+    end
   end
 end

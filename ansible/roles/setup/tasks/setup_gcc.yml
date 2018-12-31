@@ -1,3 +1,8 @@
+- name: Create src dir
+  file:
+    path: /opt/src
+    state: directory
+    
 - name: Fetch gcc
   get_url:
     url: "{{ gcc_zip }}"

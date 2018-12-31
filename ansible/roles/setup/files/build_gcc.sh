@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PATH=$PATH:/opt/binutils/mips-sgi-irix6.5/bin
 export AS_FOR_TARGET="mips-sgi-irix6.5-as"
 export LD_FOR_TARGET="mips-sgi-irix6.5-ld"
 export NM_FOR_TARGET="mips-sgi-irix6.5-nm"

@@ -1,11 +1,17 @@
 - name: Fetch gcc
-  git:
-    repo: "{{ gcc_repo }}"
+  get_url:
+    url: "{{ gcc_zip }}"
+    dest: /opt/src
+- name: Extracting gcc
+  unarchive:
+    src: "/opt/{{  gcc_zip | urlsplit('path') | basename }}"
     dest: /opt/src/gcc
     version: "{{ gcc_repo_branch }}"
 - name: create empty gcc-build dir
   file:
     path: /opt/src/gcc-build
+    copy: no
+    creates: /opt/src/gcc/ltgcc.m4
     state: directory
 - name: Fetch irix-root
   get_url:
@@ -22,3 +28,27 @@
     copy: no
     creates: /opt/irix-root/usr/lib32/yaccpar
 
+- name: Build Fix 1 - 
+  file:
+    path: /opt/gcc/mips-sgi-irix6.5
+    state: directory
+
+- name: Build Fix 2 - symlink for includes
+  file:
+    src: "/opt/irix-root/usr/include"
+    dest: "/opt/gcc/mips-sgi-irix6.5/sys-include"
+    state: link
+
+- name: Build Fix 3 - symlink for /usr/lib32
+  file:
+    src: "/opt/irix-root/usr/lib32"
+    dest: "/usr/lib32"
+    state: link
+
+- name: Build Fix 3 - replace stdlib_core.h
+  copy:
+    src: "files/stdlib_core.h"
+    dest: "/opt/gcc/mips-sgi-irix6.5/sys-include/internal"
+    owner: root
+    group: root
+    mode: 0755

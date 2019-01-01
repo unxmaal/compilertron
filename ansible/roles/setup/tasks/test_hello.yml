@@ -20,3 +20,7 @@
   command: "./build_hello.sh"
   args:
     chdir: "/opt/scratch" 
+- name: test hello output
+  shell: "file /opt/scratch/hello | grep MIPS"
+  register: result
+  failed_when: "result.rc != 0"

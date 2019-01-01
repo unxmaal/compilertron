@@ -1,0 +1,10 @@
+# Setup NFS if available
+tasks:
+- name: Ensure NFS common is installed.
+  apt: name=nfs-common state=installed update_cache=yes
+
+- name: Create mountable dir
+  file: path=/{nfs_path} state=directory mode=777 owner=root group=root
+
+- name: set mountpoints
+  mount: name=/{nfs_path} src={nfs_host} fstype=nfs opts=defaults,nobootwait dump=0 passno=2 state=mounted

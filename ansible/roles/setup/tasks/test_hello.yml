@@ -1,0 +1,22 @@
+- name: Create scratch
+  file:
+    path: /opt/scratch
+    state: directory
+- name: Copy hello.c
+  copy:
+    src: "files/hello.c"
+    dest: "/opt/scratch/hello.c"
+    owner: root
+    group: root
+    mode: 0744
+- name: Copy build_hello
+  copy:
+    src: "files/build_hello.sh"
+    dest: "/opt/scratch/build_hello.sh"
+    owner: root
+    group: root
+    mode: 0755
+- name: Build hello.c
+  command: "./build_hello.sh"
+  args:
+    chdir: "/opt/scratch" 

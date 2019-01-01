@@ -24,3 +24,12 @@
   shell: "file /opt/scratch/hello | grep MIPS"
   register: result
   failed_when: "result.rc != 0"
+
+- name: move test file to NFS if available
+  copy:
+    src:        "/opt/scratch/hello"
+    dest:       "{{ nfs_path}}"
+    owner:      nobody
+    group:      nobody
+    mode:       0755
+  when:         use_nfs

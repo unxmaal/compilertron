@@ -11,6 +11,6 @@
     path:       /{{ nfs_path }}
     src:        "{{ nfs_host }}"
     fstype:     nfs
-    opts:       defaults,nobootwait,noatime
-    state:      present
+    opts:       defaults,noatime
+    state:      mounted
   when:         use_nfs

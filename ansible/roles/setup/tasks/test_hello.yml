@@ -28,9 +28,9 @@
 - name: move test file to NFS if available
   copy:
     src:        "/opt/scratch/hello"
-    dest:       "{{ nfs_path }}"
+    dest:       "/{{ nfs_path }}"
     remote_src: yes
     owner:      nobody
-    group:      nobody
+    group:      nogroup
     mode:       0755
   when:         use_nfs

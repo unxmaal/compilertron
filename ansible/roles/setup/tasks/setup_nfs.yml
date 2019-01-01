@@ -5,17 +5,17 @@
 - name: Check if NFS is already setup
   stat:       path=/{{ nfs_path }}
   register:   nfs_path_exists
+  when:     use_nfs
 
 - name: Create mount point for our share
   file:         path=/{{ nfs_path }} state=directory mode=777 owner=root group=root
-  when:         use_nfs
-  when:         not nfs_path_exists.stat.exists
+  when:         use_nfs and not nfs_path_exists.stat.exists      
 
 - name: Mount the share on the VM
   mount: 
     path:       /{{ nfs_path }}
     src:        "{{ nfs_host }}"
     fstype:     nfs
-    opts:       defaults,noatime
+    opts:       defaults,noatime,rw
     state:      mounted
   when:         use_nfs

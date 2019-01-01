@@ -5,7 +5,7 @@
 - name: Check if NFS is already setup
   stat:       path=/{{ nfs_path }}
   register:   nfs_path_exists
-  when:     use_nfs
+  when:       use_nfs
 
 - name: Create mount point for our share
   file:         path=/{{ nfs_path }} state=directory mode=777 owner=root group=root

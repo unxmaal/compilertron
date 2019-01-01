@@ -1,12 +1,17 @@
 - name: Ensure NFS common is installed.
-  apt: name=nfs-common state=present update_cache=yes
-  when: use_nfs
+  apt:      name=nfs-common state=present update_cache=yes
+  when:     use_nfs
 
-- name: Create mountable dir
-  file: path=/{{ nfs_path }} state=directory mode=777 owner=root group=root
-  when: use_nfs
+- name: Check if NFS is already setup
+  stat:       path=/{{ nfs_path }}
+  register:   nfs_path_exists
 
-- name: set mountpoints
+- name: Create mount point for our share
+  file:         path=/{{ nfs_path }} state=directory mode=777 owner=root group=root
+  when:         use_nfs
+  when:         not nfs_path_exists.stat.exists
+
+- name: Mount the share on the VM
   mount: 
     path:       /{{ nfs_path }}
     src:        "{{ nfs_host }}"

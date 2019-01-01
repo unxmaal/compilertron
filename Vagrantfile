@@ -22,7 +22,7 @@ NUM_of_CPUs =       "2"
 # Set use_nfs to true and put in the host/share and the path where you want it mounted
 # on the VM
 
-use_nfs =         false
+use_nfs =         true
 nfs_host =        "192.168.251.10:/files"
 nfs_path =        "files"
 

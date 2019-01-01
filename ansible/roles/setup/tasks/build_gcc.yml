@@ -16,10 +16,14 @@
   file:
     dest: /opt/gcc/mips-sgi-irix6.5
     state: absent
-- name: Create mips-sgi-irix6.5 symlink
+- name: create mips-sgi-irix6.5
+  file:
+    path: "/opt/gcc/mips-sgi-irix6.5"
+    state: directory
+- name: Create mips-sgi-irix6.5 binutils symlink
   file:
     src: /opt/binutils/mips-sgi-irix6.5/bin
-    dest: /opt/gcc/mips-sgi-irix6.5
+    dest: /opt/gcc/mips-sgi-irix6.5/bin
     state: link
 - name: Create sys-include symlink
   file:

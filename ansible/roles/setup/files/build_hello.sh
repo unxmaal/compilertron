@@ -4,7 +4,7 @@ export PATH=/opt/binutils/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:
 
 main(){
     cd /opt/scratch
-    /opt/gcc/bin/mips-sgi-irix6.5-gcc -B/opt/binutils/bin/mips-sgi-irix6.5- -o hello hello.c
+    /opt/gcc/bin/mips-sgi-irix6.5-gcc -o hello hello.c
 }
 
 main 

@@ -7,10 +7,22 @@
     mode: 0755
 - name: Run the gcc builder script
   command: "./build_gcc.sh"
+  retries: 3
+  register: result
+  until: result.rc == 0
   args:
     chdir: "/opt"
-- name: Create symlink
+- name: clean up mips-sgi-irix6.5
+  file:
+    dest: /opt/gcc/mips-sgi-irix6.5
+    state: absent
+- name: Create mips-sgi-irix6.5 symlink
   file:
     src: /opt/binutils/mips-sgi-irix6.5/bin
     dest: /opt/gcc/mips-sgi-irix6.5
+    state: link
+- name: Create sys-include symlink
+  file:
+    src: /opt/irix-root/usr/include
+    dest: /opt/gcc/mips-sgi-irix6.5/sys-include
     state: link

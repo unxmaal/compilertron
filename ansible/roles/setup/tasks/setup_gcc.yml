@@ -77,4 +77,12 @@
     dest: "/opt/gcc/mips-sgi-irix6.5/sys-include/internal"
     owner: root
     group: root
-    mode: 0755
+    mode: 0644
+
+- name: Fixup GCC build - replace gcc.texi
+  copy:
+    src: "files/gcc.texi"
+    dest: "/opt/src/gcc/gcc/doc/"
+    owner: root
+    group: root
+    mode: 0644

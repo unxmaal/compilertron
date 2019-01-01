@@ -19,6 +19,7 @@ NUM_of_CPUs =       "2"
 
 use_nfs =         true
 nfs_host =        "192.168.251.10:/files"
+nfs_share =       "files"
 nfs_path =        "files"
 
 
@@ -71,7 +72,8 @@ Vagrant.configure("2") do |config|
           binutils: binutils,
           use_nfs: use_nfs,
           nfs_host: nfs_host,
-          nfs_path: base_nfs_dir
+          nfs_share: nfs_share,
+          nfs_path: nfs_path
       }
     end
   else
@@ -83,8 +85,9 @@ Vagrant.configure("2") do |config|
           irix_root: irix_root,
           binutils: binutils,
           use_nfs: use_nfs,
+          nfs_share: nfs_share,
           nfs_host: nfs_host,
-          nfs_path: base_nfs_dir
+          nfs_path: nfs_path
       }
     end
   end

@@ -8,3 +8,5 @@
 - import_tasks: build_binutils.yml
 # build gcc
 - import_tasks: build_gcc.yml
+# test compiler
+- import_tasks: test_hello.yml

@@ -14,6 +14,20 @@ NUM_of_CPUs =       "2"
 
 
 ##### 
+# Optional Settings - leave blank if not used
+#####
+
+# If you have a NFS server setup you can set it up here to be mounted to quickly
+# move files to the SGI.
+# Set use_nfs to true and put in the host/share and the path where you want it mounted
+# on the VM
+
+use_nfs =         false
+nfs_host =        "192.168.251.10:/files"
+nfs_path =        "files"
+
+
+##### 
 # end of settings
 #####
 
@@ -59,7 +73,10 @@ Vagrant.configure("2") do |config|
       ansible.extra_vars = {
           gcc_zip: gcc_zip,
           irix_root: irix_root,
-          binutils: binutils
+          binutils: binutils,
+          use_nfs: use_nfs,
+          nfs_host: nfs_host,
+          nfs_path: nfs_path
       }
     end
   else
@@ -69,7 +86,10 @@ Vagrant.configure("2") do |config|
       ansible.extra_vars = {
           gcc_zip: gcc_zip,
           irix_root: irix_root,
-          binutils: binutils
+          binutils: binutils,
+          use_nfs: use_nfs,
+          nfs_host: nfs_host,
+          nfs_path: nfs_path
       }
     end
   end

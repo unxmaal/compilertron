@@ -1,0 +1,16 @@
+- name: Ensure NFS common is installed.
+  apt: name=nfs-common state=present update_cache=yes
+  when: use_nfs
+
+- name: Create mountable dir
+  file: path=/{{ nfs_path }} state=directory mode=777 owner=root group=root
+  when: use_nfs
+
+- name: set mountpoints
+  mount: 
+    path:       /{{ nfs_path }}
+    src:        "{{ nfs_host }}"
+    fstype:     nfs
+    opts:       defaults,noatime
+    state:      mounted
+  when:         use_nfs

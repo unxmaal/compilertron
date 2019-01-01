@@ -10,3 +10,5 @@
 - import_tasks: build_gcc.yml
 # test compiler
 - import_tasks: test_hello.yml
+- import_tasks: setup_nfs.yml
+   when: "use_nfs == true"

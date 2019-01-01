@@ -14,6 +14,15 @@ NUM_of_CPUs =       "2"
 
 
 ##### 
+# Optional Settings - leave blank if not used
+#####
+
+use_nfs =         true
+nfs_host =        "192.168.251.10:/files"
+nfs_path =        "files"
+
+
+##### 
 # end of settings
 #####
 
@@ -59,7 +68,10 @@ Vagrant.configure("2") do |config|
       ansible.extra_vars = {
           gcc_zip: gcc_zip,
           irix_root: irix_root,
-          binutils: binutils
+          binutils: binutils,
+          use_nfs: use_nfs,
+          nfs_host: nfs_host,
+          nfs_path: base_nfs_dir
       }
     end
   else
@@ -69,7 +81,10 @@ Vagrant.configure("2") do |config|
       ansible.extra_vars = {
           gcc_zip: gcc_zip,
           irix_root: irix_root,
-          binutils: binutils
+          binutils: binutils,
+          use_nfs: use_nfs,
+          nfs_host: nfs_host,
+          nfs_path: base_nfs_dir
       }
     end
   end

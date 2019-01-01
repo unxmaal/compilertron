@@ -20,5 +20,5 @@ main(){
     make install
 }
 
-main | tee /opt/src/make.log
+main 2>&1 | tee /opt/src/make.log
 exit $?

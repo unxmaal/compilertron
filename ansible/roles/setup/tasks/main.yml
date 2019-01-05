@@ -1,7 +1,7 @@
 # Setup the virt OS
 - import_tasks: setup_virt_os.yml
 # Add 50gb opt vol
-- import_tasks: setup_compile_vol.yml
+#- import_tasks: setup_compile_vol.yml
 # setup NFS client to move executables
 # tasks only fire when use_nfs set to true
 - import_tasks: setup_nfs.yml

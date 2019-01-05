@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
   config.vm.box =               Target_Base_Box
   config.vm.box_version =       Target_Version
   config.vm.post_up_message =   [ "compilertron configuration stage" ]
-  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  config.vm.synced_folder "./opt", "/opt", type: "virtualbox"
 
  # setup VirtualBox Settings
   config.vm.provider "virtualbox" do |v|

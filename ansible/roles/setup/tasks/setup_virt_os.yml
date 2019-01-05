@@ -28,3 +28,6 @@
     - texinfo 
     - git 
     - unzip
+    - openssh-server
+    - autoconf
+    - gettext

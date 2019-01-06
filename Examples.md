@@ -172,27 +172,27 @@ pkg-config --cflags --libs libevent
 * Set up pkg-config for ncurses
 ```
 export PKG_CONFIG_PATH=/opt/ncurses-6.1/misc:$PKG_CONFIG_PATH
-pkg-config --cflags --libs ncurses
-pkg-config --cflags --libs ncurses++
+pkg-config --cflags --libs --static ncurses
+pkg-config --cflags --libs --static ncurses++
 ```
 
 
 * Compile tmux
 ```
-./configure --prefix=/opt/tmux --host=x86_64-unknown-linux-gnu
---enable-static
+./configure --prefix=/opt/tmux --host=x86_64-unknown-linux-gnu --enable-static
 
 
-./configure --prefix=/opt/tmux --host=x86_64-unknown-linux-gnu  CFLAGS="-I/opt/libevent/include -I/opt/ncurses/include/ncurses" LDFLAGS="-static -L/opt/libevent/lib -L/opt/libevent/include -L/opt/ncurses/lib -L/opt/ncurses/include/ncurses" CPPFLAGS="-I/opt/libevent/include -I/opt/ncurses/include/ncurses" LDFLAGS="-static -L/opt/libevent/lib -L/opt/libevent/include -L/opt/ncurses/lib -L/opt/ncurses/include/ncurses" LIBNCURSES_LIBS LIBNCURSES_CFLAGS
+
+./configure --prefix=/opt/tmux --host=x86_64-unknown-linux-gnu  CFLAGS="-I/opt/libevent/include -I/opt/ncurses/include/ncurses" LDFLAGS="-static -L/opt/libevent/lib -L/opt/libevent/include -L/opt/ncurses/lib -L/opt/ncurses/include/ncurses" CPPFLAGS="-I/opt/libevent/include -I/opt/ncurses/include/ncurses" LDFLAGS="-static -L/opt/libevent/lib -L/opt/libevent/include -L/opt/ncurses/lib -L/opt/ncurses/include/ncurses" LIBNCURSES_LIB="-L/opt/ncurses/lib" LIBNCURSES_CFLAGS="I/opt/ncurses/include/ncurses"
 
 make
 make install
 ```
 
 # Installation
-* create a tarball of /opt/libevent
+* create a tarball of /opt/tmux
 ```
-tar cvzf libevent-2.1.8-mips.tar.gz /opt/libevent
+tar cvzf tmux-2.8-mips.tar.gz /opt/tmux
 ```
 * Copy to IRIX system
 * Extract to /opt

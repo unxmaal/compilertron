@@ -12,12 +12,12 @@ Compilertron creates a Linux VM that is configured for cross-compiling IRIX-comp
 Run 'vagrant up' to create and provision the VM.
 
 vagrant provisions the VM with
-    * build tools
-    * IRIX 6.5.30 sysroot
-    * binutils 2.17 compiled for MIPS IRIX 6.5.30
-    * GCC 4.7 compiled for MIPS IRIX 6.5.30
-    * Self test
-    * NFS mount to external host (if desired)
+  * build tools
+  * IRIX 6.5.30 sysroot
+  * binutils 2.17 compiled for MIPS IRIX 6.5.30
+  * GCC 4.7 compiled for MIPS IRIX 6.5.30
+  * Self test
+  * NFS mount to external host (if desired)
 
 When the VM is provisioned, run 'vagrant ssh' for access into it.
 

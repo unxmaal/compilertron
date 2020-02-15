@@ -31,3 +31,5 @@
     - openssh-server
     - autoconf
     - gettext
+    - distcc
+    - rpm

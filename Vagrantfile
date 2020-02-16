@@ -7,8 +7,8 @@ sgug_rse =          "https://github-production-release-asset-2e65be.s3.amazonaws
 irix_root =         "http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2"
 binutils =          "https://mirrors.tripadvisor.com/gnu/binutils/binutils-2.17a.tar.bz2"
 
-Target_Base_Box =   "debian/contrib-stretch64"
-Target_Version =    "9.6.0"
+Target_Base_Box =   "debian/buster64"
+Target_Version =    "10.3.0"
 RAM_for_VM =        "16048"
 NUM_of_CPUs =       "8"
 

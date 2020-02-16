@@ -1,12 +1,12 @@
-- name: Get the gcc builder script
-  copy:
-    src: files/build_gcc.sh
-    dest: /opt/sgug/build_gcc.sh
-    mode: 0755
 
-- name: run build_gcc.sh
-  command:
-    cmd: /opt/sgug/build_gcc.sh
+- name: Create gcc build dir
+  file:
+    path: /root/rpmbuild/BUILD/gcc-9.2.0-20190812
+    state: directory
+
+# - name: run build_gcc.sh
+#   command:
+#     cmd: /opt/sgug/build_gcc.sh
 
 
 # - name: Get the gcc builder script

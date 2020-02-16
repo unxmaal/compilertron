@@ -2,99 +2,6 @@
 #   get_url:
 #     url: "{{ sgug_rse }}"
 #     dest: "/opt/src/sgug-rse-srpms-0.0.3alpha.tar.gz"
-- name: Create /opt/sgug directory $PREFIX
-  file:
-    path: "/opt/sgug"
-    state: directory
-
-- name: Create irix-root directory $IRIX
-  file:
-    path: "/opt/irix-root"
-    state: directory
-
-- name: copy file
-  copy:
-    src: irix-root.6.5.30.tar.bz2
-    dest: /opt/irix-root.6.5.30.tar.bz2
-
-- name: copy file
-  copy:
-    src: sgug-rse-srpms-0.0.3alpha.tar.gz
-    dest: /opt/sgug-rse-srpms-0.0.3alpha.tar.gz
-
-- name: Extract irix-root tarball
-  unarchive:
-    src: "/opt/{{  irix_root | urlsplit('path') | basename }}"
-    dest: "/opt/irix-root"
-    copy: no
-    creates: "/opt/irix-root/usr/lib32/yaccpar"
-
-- name: Extracting rse zip into /opt/sgug
-  unarchive:
-    src: "/opt/sgug-rse-srpms-0.0.3alpha.tar.gz"
-    dest: "/opt/sgug"
-    copy: no
-    #creates: "/opt/src/gcc/ltgcc.m4"
-
-# binutils
-- name: Install the binutils srpm
-  command:
-    cmd: rpm -Uvh /opt/sgug/rpmbuild/SRPMS/binutils-2.23.2-24.sgugalpha.src.rpm
-
-- name: Remove gcc source dir
-  file:
-    path: /root/rpmbuild/SOURCES/binutils-2.23.2
-    state: absent
-
-- name: Create binutils source dir
-  file:
-    path: /root/rpmbuild/SOURCES/binutils-2.23.2
-    state: directory
-
-- name: extract the source tarball
-  unarchive:
-    src: /root/rpmbuild/SOURCES/binutils-2.23.2.tar.gz
-    dest: /root/rpmbuild/SOURCES
-    remote_src: yes
-
-# Patch04: binutils-2.22.52.0.4-no-config-h-check.patch
-- name: apply patch 4
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils-2.22.52.0.4-no-config-h-check.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
-# Patch60: binutils2_23.sgifixes.patch
-- name: apply patch 60
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils2_23.sgifixes.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
-# Patch61: binutils.sgirelinkfix.patch
-- name: apply patch 61
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils.sgirelinkfix.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
-# Patch62: binutils.ldirixn32paths.patch
-- name: apply patch 62
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils.ldirixn32paths.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
-
-- name: copy make_binutils.sh
-  copy:
-    src: files/make_binutils.sh
-    dest: /opt/sgug/make_binutils.sh
-    mode: 0755
-
-- name: run make_binutils.sh
-  command:
-    cmd: /opt/sgug/make_binutils.sh
 
 
 # gcc
@@ -127,6 +34,13 @@
 - name: run patch_gcc.sh
   command:
     cmd: /opt/sgug/patch_gcc.sh
+
+- name: Get the gcc builder script
+  copy:
+    src: files/build_gcc.sh
+    dest: /opt/sgug/build_gcc.sh
+    mode: 0755
+
 
 # - name: Stat poorly-named gcc dir
 #   stat: path=/opt/src/gcc-gcc-4_7-irix

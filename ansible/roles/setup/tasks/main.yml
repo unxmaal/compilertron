@@ -4,6 +4,7 @@
 #- import_tasks: setup_compile_vol.yml
 # setup NFS client to move executables
 # tasks only fire when use_nfs set to true
+- import_tasks: setup_sgug.yml
 - import_tasks: setup_nfs.yml
 # build binutils
 - import_tasks: build_binutils.yml

@@ -1,6 +1,8 @@
 #!/bin/bash
 
 main(){
+    mkdir -p /root/rpmbuild/BUILD/gcc-9.2.0-20190812
+    cd /root/rpmbuild/BUILD/gcc-9.2.0-20190812
 
     mkdir -p $PREFIX/mips-sgi-irix6.5
 
@@ -10,9 +12,7 @@ main(){
     if [[ ! -e $PREFIX/mips-sgi-irix6.5/sys-include ]] ; then
         ln -s $IRIX/usr/include $PREFIX/mips-sgi-irix6.5/sys-include
     fi
-    cd /root/rpmbuild/SOURCES/gcc-9.2.0-20190812
-
-    ./configure --enable-obsolete \
+    /root/rpmbuild/SOURCES/gcc-9.2.0-20190812/configure --enable-obsolete \
         --disable-multilib \
         --prefix=$PREFIX \
         --target=mips-sgi-irix6.5 \

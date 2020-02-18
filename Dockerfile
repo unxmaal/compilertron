@@ -17,7 +17,8 @@ RUN apt-get -y update &&\
     distcc \
     rpm \
     tree \
-    vim 
+    vim \
+    file
 
 FROM base as sgug
 RUN mkdir -p /opt/sgug && \

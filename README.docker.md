@@ -9,6 +9,7 @@ Runs compilertron in a docker container
 
 # Setup
 * git clone this repo
+* git checkout distcc_ct
 * obtain the following files and place them in ansible/.
     * sgug_rse: "https://github-production-release-asset-2e65be.s3.amazonaws.com/232236744/b45be480-38a2-11ea-9052-76fadec4c942?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20200215%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200215T152648Z&X-Amz-Expires=300&X-Amz-Signature=82e979b6d02b423851ac155fcbf06c9eb707237d6ce9a99d9e452f5be633889c&X-Amz-SignedHeaders=host&actor_id=1377410&response-content-disposition=attachment%3B%20filename%3Dsgug-rse-srpms-0.0.3alpha.tar.gz&response-content-type=application%2Foctet-stream"
     * irix_root: "http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2"

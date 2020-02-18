@@ -19,13 +19,13 @@
     dest: /root/rpmbuild/SOURCES
     remote_src: yes
 
-# Patch04: binutils-2.22.52.0.4-no-config-h-check.patch
-- name: apply patch 4
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils-2.22.52.0.4-no-config-h-check.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
+# # Patch04: binutils-2.22.52.0.4-no-config-h-check.patch
+# - name: apply patch 4
+#   patch:
+#     src: /root/rpmbuild/SOURCES/binutils-2.22.52.0.4-no-config-h-check.patch
+#     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+#     strip: 1
+#     remote_src: yes
 # Patch60: binutils2_23.sgifixes.patch
 - name: apply patch 60
   patch:
@@ -33,20 +33,20 @@
     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
     strip: 1
     remote_src: yes
-# Patch61: binutils.sgirelinkfix.patch
-- name: apply patch 61
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils.sgirelinkfix.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
-# Patch62: binutils.ldirixn32paths.patch
-- name: apply patch 62
-  patch:
-    src: /root/rpmbuild/SOURCES/binutils.ldirixn32paths.patch
-    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
-    strip: 1
-    remote_src: yes
+# # Patch61: binutils.sgirelinkfix.patch
+# - name: apply patch 61
+#   patch:
+#     src: /root/rpmbuild/SOURCES/binutils.sgirelinkfix.patch
+#     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+#     strip: 1
+#     remote_src: yes
+# # Patch62: binutils.ldirixn32paths.patch
+# - name: apply patch 62
+#   patch:
+#     src: /root/rpmbuild/SOURCES/binutils.ldirixn32paths.patch
+#     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+#     strip: 1
+#     remote_src: yes
 
 - name: copy make_binutils.sh
   copy:

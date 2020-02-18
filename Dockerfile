@@ -26,7 +26,7 @@ RUN mkdir -p /opt/sgug && \
 COPY ansible/irix-root.6.5.30.tar.bz2 /opt/irix-root.6.5.30.tar.bz2
 COPY ansible/sgug-rse-srpms-0.0.3alpha.tar.gz /opt/sgug-rse-srpms-0.0.3alpha.tar.gz
 
-RUN tar -xvjf /opt/irix-root.6.5.30.tar.bz2 -C /opt && \
+RUN tar -xvjf /opt/irix-root.6.5.30.tar.bz2 -C /opt/irix-root && \
     tar -xvzf /opt/sgug-rse-srpms-0.0.3alpha.tar.gz -C /opt/sgug
 
 #-------------------------

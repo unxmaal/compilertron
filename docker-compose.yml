@@ -6,7 +6,7 @@ networks:
 
 services:
   compilertron:
-    image: compilertron:latest
+    image: unxmaal/compilertron:latest
     container_name: compilertron
     hostname: compilertron
     ports:

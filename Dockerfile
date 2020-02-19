@@ -19,7 +19,7 @@ RUN apt-get -y update &&\
     tree \
     vim \
     file
-
+#-------------------------
 FROM base as sgug
 RUN mkdir -p /opt/sgug && \
     mkdir -p /opt/irix-root
@@ -50,3 +50,18 @@ RUN chmod +x /opt/sgug/*.sh && \
     tar xvzf /root/rpmbuild/SOURCES/gcc-9.2.0-20190812.tar.gz -C /root/rpmbuild/SOURCES && \
     /opt/sgug/patch_gcc.sh && \
     /opt/sgug/build_gcc.sh  
+
+#-------------------------
+FROM sgug_gcc as sgug_distcc
+
+COPY files/entry.sh /opt/sgug/entry.sh
+RUN chmod +x /opt/sgug/entry.sh
+
+EXPOSE \  
+    8088/tcp \
+    8188/tcp
+
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://0.0.0.0:8188/ || exit 1
+
+ENTRYPOINT [ "/opt/sgug/entry.sh" ] 

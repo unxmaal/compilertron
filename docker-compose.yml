@@ -1,16 +1,16 @@
 ---
 version: '3'
 
-networks:
-  internalnet:
+# networks:
+#   internalnet:
 
 services:
   compilertron:
-    image: unxmaal/compilertron:latest
+    image: bca50fe928c9 #unxmaal/compilertron:old
     container_name: compilertron
     hostname: compilertron
     ports:
       - "8086:8086"
-      - "8188:8188"
-    networks:
-      - internalnet
+      - "8186:8186"
+    # networks:
+    #   - internalnet

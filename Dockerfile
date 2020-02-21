@@ -52,11 +52,11 @@ RUN chmod +x /opt/sgug/*.sh && \
     /opt/sgug/build_gcc.sh  
 
 #-------------------------
-#FROM base as sgug_distcc
+FROM base as sgug_distcc
 
-FROM  sgug_gcc as sgug_distcc
-# COPY --from=sgug_gcc /opt/sgug /opt/
-# COPY --from=sgug_gcc /opt/irix-root /opt/
+#FROM  sgug_gcc as sgug_distcc
+COPY --from=sgug_gcc /opt/sgug /opt/sgug
+COPY --from=sgug_gcc /opt/irix-root /opt/irix-root
 
 COPY files/entry.sh /opt/sgug/entry.sh
 RUN chmod +x /opt/sgug/entry.sh && \

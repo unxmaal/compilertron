@@ -6,7 +6,7 @@ version: '3'
 
 services:
   compilertron:
-    image: bca50fe928c9 #unxmaal/compilertron:old
+    image: unxmaal/compilertron:latest
     container_name: compilertron
     hostname: compilertron
     ports:

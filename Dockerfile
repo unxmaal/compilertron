@@ -23,16 +23,24 @@ RUN apt-get -y update &&\
 FROM base as sgug
 RUN mkdir -p /opt/sgug && \
     mkdir -p /opt/irix-root
-COPY files/irix-root.6.5.30.tar.bz2 /opt/irix-root.6.5.30.tar.bz2
 
+WORKDIR /opt
+RUN curl -OL http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2
 RUN tar -xvjf /opt/irix-root.6.5.30.tar.bz2 -C /opt/irix-root
+
+#-------------------------
+FROM sgug as sgug_srpms
+
+WORKDIR /opt/sgug
+RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.4beta/sgug-rse-srpms-0.0.4beta.tar.gz
+RUN tar -xvf sgug-rse-srpms*.tar.gz
 
 #-------------------------
 FROM sgug as sgug_binutils
 
 COPY files/make_binutils.sh /opt/sgug/make_binutils.sh
 COPY files/patch_binutils.sh /opt/sgug/patch_binutils.sh
-COPY files/binutils-2.23.2-24.sgugbeta.src.rpm /opt/sgug/binutils-2.23.2-24.sgugbeta.src.rpm
+COPY --from=sgug_srpms /opt/sgug/SRPMS/binutils-2.23.2-24.sgugbeta.src.rpm /opt/sgug/binutils-2.23.2-24.sgugbeta.src.rpm
 RUN chmod +x /opt/sgug/*.sh && \
     rpm -Uvh /opt/sgug/binutils-2.23.2-24.sgugbeta.src.rpm && \
     tar xvzf /root/rpmbuild/SOURCES/binutils-2.23.2.tar.gz -C /root/rpmbuild/SOURCES && \
@@ -44,7 +52,7 @@ FROM  sgug_binutils as sgug_gcc
 
 COPY files/patch_gcc.sh /opt/sgug/patch_gcc.sh
 COPY files/build_gcc.sh /opt/sgug/build_gcc.sh
-COPY files/gcc-9.2.0-1.sgugbeta.src.rpm /opt/sgug/gcc-9.2.0-1.sgugbeta.src.rpm
+COPY --from=sgug_srpms /opt/sgug/SRPMS/gcc-9.2.0-1.sgugbeta.src.rpm /opt/sgug/gcc-9.2.0-1.sgugbeta.src.rpm
 RUN chmod +x /opt/sgug/*.sh && \
     rpm -Uvh /opt/sgug/gcc-9.2.0-1.sgugbeta.src.rpm && \
     tar xvzf /root/rpmbuild/SOURCES/gcc-9.2.0-20190812.tar.gz -C /root/rpmbuild/SOURCES && \

@@ -32,9 +32,9 @@ FROM sgug as sgug_binutils
 
 COPY files/make_binutils.sh /opt/sgug/make_binutils.sh
 COPY files/patch_binutils.sh /opt/sgug/patch_binutils.sh
-COPY files/binutils-2.23.2-24.sgugalpha.src.rpm /opt/sgug/binutils-2.23.2-24.sgugalpha.src.rpm
+COPY files/binutils-2.23.2-24.sgugbeta.src.rpm /opt/sgug/binutils-2.23.2-24.sgugbeta.src.rpm
 RUN chmod +x /opt/sgug/*.sh && \
-    rpm -Uvh /opt/sgug/binutils-2.23.2-24.sgugalpha.src.rpm && \
+    rpm -Uvh /opt/sgug/binutils-2.23.2-24.sgugbeta.src.rpm && \
     tar xvzf /root/rpmbuild/SOURCES/binutils-2.23.2.tar.gz -C /root/rpmbuild/SOURCES && \
     /opt/sgug/patch_binutils.sh && \
     /opt/sgug/make_binutils.sh
@@ -44,9 +44,9 @@ FROM  sgug_binutils as sgug_gcc
 
 COPY files/patch_gcc.sh /opt/sgug/patch_gcc.sh
 COPY files/build_gcc.sh /opt/sgug/build_gcc.sh
-COPY files/gcc-9.2.0-1.sgugalpha.src.rpm /opt/sgug/gcc-9.2.0-1.sgugalpha.src.rpm
+COPY files/gcc-9.2.0-1.sgugbeta.src.rpm /opt/sgug/gcc-9.2.0-1.sgugbeta.src.rpm
 RUN chmod +x /opt/sgug/*.sh && \
-    rpm -Uvh /opt/sgug/gcc-9.2.0-1.sgugalpha.src.rpm && \
+    rpm -Uvh /opt/sgug/gcc-9.2.0-1.sgugbeta.src.rpm && \
     tar xvzf /root/rpmbuild/SOURCES/gcc-9.2.0-20190812.tar.gz -C /root/rpmbuild/SOURCES && \
     /opt/sgug/patch_gcc.sh && \
     /opt/sgug/build_gcc.sh  
@@ -78,10 +78,10 @@ RUN chmod +x /opt/sgug/entry.sh && \
     update-distcc-symlinks
 
 EXPOSE \  
-    8086/tcp \
+    3632/tcp \
     8186/tcp
 
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f http://0.0.0.0:8186/ || exit 1
 
-ENTRYPOINT [ "/opt/sgug/entry.sh" ] 
+ENTRYPOINT [ "/opt/sgug/entry.sh" ]

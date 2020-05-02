@@ -83,6 +83,21 @@ RUN chmod +x /opt/sgug/entry.sh && \
     ln -s /opt/sgug/bin/mips-sgi-irix6.5-readelf /opt/sgug/mips-sgi-irix6.5/bin/readelf && \
     ln -s /opt/sgug/bin/mips-sgi-irix6.5-size /opt/sgug/mips-sgi-irix6.5/bin/size && \
     ln -s /opt/sgug/bin/mips-sgi-irix6.5-strings /opt/sgug/mips-sgi-irix6.5/bin/strings && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-cc && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-addr2line /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-addr2line && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++ /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-c++ && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++filt /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-c++filt && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-cpp /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-cpp && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-elfedit /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-elfedit && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-g++ /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-g++ && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcc && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc-9.2.0 /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcc-9.2.0 && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-dump /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov-dump && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-tool /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov-tool && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-readelf /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-readelf && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-size /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-size && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-strings /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-strings && \
     update-distcc-symlinks
 
 EXPOSE \  

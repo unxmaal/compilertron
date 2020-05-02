@@ -1,41 +1,59 @@
-- name: Fetch binutils
-  get_url:
-    url: "{{ binutils }}"
-    dest: "/opt/{{  binutils | urlsplit('path') | basename }}"
-- name: create binutils source dir
+# binutils
+- name: Install the binutils srpm
+  command:
+    cmd: rpm -Uvh /opt/sgug/rpmbuild/SRPMS/binutils-2.23.2-24.sgugalpha.src.rpm
+
+- name: Remove gcc source dir
   file:
-    path: /opt/src/binutils
-    state: directory
-- name: create binutils dir
+    path: /root/rpmbuild/SOURCES/binutils-2.23.2
+    state: absent
+
+- name: Create binutils source dir
   file:
-    path: /opt/binutils
+    path: /root/rpmbuild/SOURCES/binutils-2.23.2
     state: directory
-- name: Extracting binutils
+
+- name: extract the source tarball
   unarchive:
-    src: "/opt/{{  binutils | urlsplit('path') | basename }}"
-    dest: /opt/src/binutils
-    copy: no
-    creates: "/opt/src/binutils/binutils-2.17/libtool.m4"
-- name: determine if we've already built this before
-  stat: path=/opt/binutils/bin/mips-sgi-irix6.5-as
-  register: binutils_built
-- name: configure binutils
-  command: "./configure --target=mips-sgi-irix6.5 --prefix=/opt/binutils --with-sysroot=/opt/irix-root --enable-werror=no"
-  args:
-    chdir: "/opt/src/binutils/binutils-2.17"
-  when: binutils_built.stat.exists == False
-- name: make binutils
-  command: "make"
-  args:
-    chdir: "/opt/src/binutils/binutils-2.17"
-  when: binutils_built.stat.exists == False
-- name: configure binutils
-  command: "make install"
-  args:
-    chdir: "/opt/src/binutils/binutils-2.17"
-  when: binutils_built.stat.exists == False
-- name: cleanup binutils
-  command: "make clean"
-  args:
-    chdir: "/opt/src/binutils/binutils-2.17"
-  when: binutils_built.stat.exists == False
+    src: /root/rpmbuild/SOURCES/binutils-2.23.2.tar.gz
+    dest: /root/rpmbuild/SOURCES
+    remote_src: yes
+
+# # Patch04: binutils-2.22.52.0.4-no-config-h-check.patch
+# - name: apply patch 4
+#   patch:
+#     src: /root/rpmbuild/SOURCES/binutils-2.22.52.0.4-no-config-h-check.patch
+#     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+#     strip: 1
+#     remote_src: yes
+# Patch60: binutils2_23.sgifixes.patch
+- name: apply patch 60
+  patch:
+    src: /root/rpmbuild/SOURCES/binutils2_23.sgifixes.patch
+    basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+    strip: 1
+    remote_src: yes
+# # Patch61: binutils.sgirelinkfix.patch
+# - name: apply patch 61
+#   patch:
+#     src: /root/rpmbuild/SOURCES/binutils.sgirelinkfix.patch
+#     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+#     strip: 1
+#     remote_src: yes
+# # Patch62: binutils.ldirixn32paths.patch
+# - name: apply patch 62
+#   patch:
+#     src: /root/rpmbuild/SOURCES/binutils.ldirixn32paths.patch
+#     basedir: /root/rpmbuild/SOURCES/binutils-2.23.2
+#     strip: 1
+#     remote_src: yes
+
+- name: copy make_binutils.sh
+  copy:
+    src: files/make_binutils.sh
+    dest: /opt/sgug/make_binutils.sh
+    mode: 0755
+
+- name: run make_binutils.sh
+  command:
+    cmd: /opt/sgug/make_binutils.sh

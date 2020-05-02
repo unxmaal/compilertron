@@ -1,0 +1,33 @@
+- name: Create /opt/sgug directory $PREFIX
+  file:
+    path: "/opt/sgug"
+    state: directory
+
+- name: Create irix-root directory $IRIX
+  file:
+    path: "/opt/irix-root"
+    state: directory
+
+- name: copy file
+  copy:
+    src: irix-root.6.5.30.tar.bz2
+    dest: /opt/irix-root.6.5.30.tar.bz2
+
+- name: copy file
+  copy:
+    src: sgug-rse-srpms-0.0.3alpha.tar.gz
+    dest: /opt/sgug-rse-srpms-0.0.3alpha.tar.gz
+
+- name: Extract irix-root tarball
+  unarchive:
+    src: "/opt/{{  irix_root | urlsplit('path') | basename }}"
+    dest: "/opt/irix-root"
+    copy: no
+    creates: "/opt/irix-root/usr/lib32/yaccpar"
+
+- name: Extracting rse zip into /opt/sgug
+  unarchive:
+    src: "/opt/sgug-rse-srpms-0.0.3alpha.tar.gz"
+    dest: "/opt/sgug"
+    copy: no
+    #creates: "/opt/src/gcc/ltgcc.m4"

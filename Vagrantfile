@@ -3,14 +3,14 @@
 # Change these settings to match your environment
 #####
 
-gcc_zip =           "https://github.com/onre/gcc/archive/gcc-4_7-irix.zip"
+sgug_rse =          "https://github-production-release-asset-2e65be.s3.amazonaws.com/232236744/b45be480-38a2-11ea-9052-76fadec4c942?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20200215%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200215T152648Z&X-Amz-Expires=300&X-Amz-Signature=82e979b6d02b423851ac155fcbf06c9eb707237d6ce9a99d9e452f5be633889c&X-Amz-SignedHeaders=host&actor_id=1377410&response-content-disposition=attachment%3B%20filename%3Dsgug-rse-srpms-0.0.3alpha.tar.gz&response-content-type=application%2Foctet-stream"
 irix_root =         "http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2"
 binutils =          "https://mirrors.tripadvisor.com/gnu/binutils/binutils-2.17a.tar.bz2"
 
-Target_Base_Box =   "debian/contrib-stretch64"
-Target_Version =    "9.6.0"
-RAM_for_VM =        "2048"
-NUM_of_CPUs =       "2"
+Target_Base_Box =   "debian/buster64"
+Target_Version =    "10.3.0"
+RAM_for_VM =        "16048"
+NUM_of_CPUs =       "8"
 
 
 ##### 
@@ -32,9 +32,9 @@ nfs_path =        "files"
 #####
 
 current_dir = File.dirname(File.expand_path(__FILE__))     
-disk_prefix = 'compiledisk'
+disk_prefix = 'ctdisk'
 disk_ext ='.vdi'      
-compiledisk = "%s/%s%s" % [current_dir,disk_prefix,disk_ext] 
+ctdisk = "%s/%s%s" % [current_dir,disk_prefix,disk_ext] 
 
 #
 # Main configure block
@@ -53,10 +53,10 @@ Vagrant.configure("2") do |config|
 
   # Create disk for compiled objects
   config.vm.provider "virtualbox" do |v|
-    unless File.exist?(compiledisk)
-      v.customize ['createhd', '--filename', compiledisk, '--size', 50 * 1024]
+    unless File.exist?(ctdisk)
+      v.customize ['createhd', '--filename', ctdisk, '--size', 50 * 1024]
     end
-      v.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', compiledisk]
+      v.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', ctdisk]
   end
 end
 
@@ -71,7 +71,7 @@ Vagrant.configure("2") do |config|
       ansible.verbose = "v"
       ansible.playbook = "ansible/compilertron_setup.yml"
       ansible.extra_vars = {
-          gcc_zip: gcc_zip,
+          sgug_rse: sgug_rse,
           irix_root: irix_root,
           binutils: binutils,
           use_nfs: use_nfs,
@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
       ansible.verbose = "v"
       ansible.playbook = "ansible/compilertron_setup.yml"
       ansible.extra_vars = {
-          gcc_zip: gcc_zip,
+          sgug_rse: sgug_rse,
           irix_root: irix_root,
           binutils: binutils,
           use_nfs: use_nfs,

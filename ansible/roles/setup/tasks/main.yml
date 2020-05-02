@@ -4,12 +4,13 @@
 #- import_tasks: setup_compile_vol.yml
 # setup NFS client to move executables
 # tasks only fire when use_nfs set to true
+- import_tasks: setup_sgug.yml
 - import_tasks: setup_nfs.yml
-# Set up gcc
-- import_tasks: setup_gcc.yml
 # build binutils
 - import_tasks: build_binutils.yml
-# build gcc
-- import_tasks: build_gcc.yml
-# test compiler
-- import_tasks: test_hello.yml
+# # Set up gcc
+- import_tasks: setup_gcc.yml
+# # build gcc
+# - import_tasks: build_gcc.yml
+# # test compiler
+# - import_tasks: test_hello.yml

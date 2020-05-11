@@ -98,8 +98,15 @@ RUN chmod +x /opt/sgug/entry.sh && \
     ln -s /opt/sgug/bin/mips-sgi-irix6.5-readelf /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-readelf && \
     ln -s /opt/sgug/bin/mips-sgi-irix6.5-size /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-size && \
     ln -s /opt/sgug/bin/mips-sgi-irix6.5-strings /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-strings && \
-    update-distcc-symlinks
-
+    update-distcc-symlinks && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-tool /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov-tool && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-readelf /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-readelf && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-size /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-size && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-strings /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-strings && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /usr/lib/distcc/mips-sgi-irix6.5-gcc && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-g++ /usr/lib/distcc/mips-sgi-irix6.5-g++ && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-cpp /usr/lib/distcc/mips-sgi-irix6.5-cpp && \
+    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++ /usr/lib/distcc/mips-sgi-irix6.5-c++
 EXPOSE \  
     3632/tcp \
     8186/tcp

@@ -15,16 +15,14 @@ RUN mkdir -p /opt/sgug && \
     mkdir -p /opt/irix-root
 
 WORKDIR /opt
-#RUN curl -OL http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2
-RUN curl -OL http://media.wuffhouse.ca/sgi/irix-root.6.5.30.tar.bz2
+RUN curl -OL http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2
 RUN tar -xvjf /opt/irix-root.6.5.30.tar.bz2 -C /opt/irix-root
 
 #-------------------------
 FROM sgug as sgug_srpms
 
 WORKDIR /opt/sgug
-#RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.6beta/sgug-rse-srpms-0.0.6beta.tar.gz
-RUN curl -OL http://media.wuffhouse.ca/sgi/sgug-rse-srpms-0.0.6beta.tar.gz
+RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.6beta/sgug-rse-srpms-0.0.6beta.tar.gz
 RUN tar -xvf sgug-rse-srpms*.tar.gz
 
 # #-------------------------
@@ -97,8 +95,7 @@ RUN chmod +x /opt/sgug/entry.sh && \
 FROM sgug_distcc as sgug_env
 
 WORKDIR /opt/sgug
-#RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.7beta/sgug-rse-selfhoster-0.0.7beta.tar.gz
-RUN curl -OL http://media.wuffhouse.ca/sgi/sgug-rse-selfhoster-0.0.7beta.tar.gz
+RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.7beta/sgug-rse-selfhoster-0.0.7beta.tar.gz
 RUN tar -C /opt/irix-root/usr -xzf sgug-rse-selfhoster-0.0.7beta.tar.gz
 
 # This makes it easier to find the gpg key -- come to think of it, doing this will make it

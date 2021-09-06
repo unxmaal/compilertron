@@ -39,7 +39,7 @@ main(){
         --enable-lto \
         --enable-tls=no
 
-    make -j8
+    make -s -j32
     make install
 }
 

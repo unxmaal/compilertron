@@ -1,17 +1,10 @@
 ---
-version: '3'
-
-# networks:
-#   internalnet:
-
+version: "2.1"
 services:
-  compilertron:
-    image: unxmaal/compilertron:latest
-    container_name: compilertron
-    hostname: compilertron
-    ports:
-      - "8086:8086"
-      - "8186:8186"
-      - "3632:3632"
-    # networks:
-    #   - internalnet
+  irixenv:
+    image: irixenv:latest
+    container_name: irixenv
+    healthcheck:
+      disable: true
+
+

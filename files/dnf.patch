@@ -1,0 +1,10 @@
+--- /usr/lib/python3.9/site-packages/dnf/base.py.orig	2021-09-06 06:52:03.630712863 +0000
++++ /usr/lib/python3.9/site-packages/dnf/base.py	2021-09-06 06:52:15.740712773 +0000
+@@ -615,6 +615,7 @@
+ 
+         if self.conf.ignorearch:
+             self._rpm_probfilter.add(rpm.RPMPROB_FILTER_IGNOREARCH)
++            self._rpm_probfilter.add(rpm.RPMPROB_FILTER_IGNOREOS)
+ 
+         probfilter = functools.reduce(operator.or_, self._rpm_probfilter, 0)
+         self._priv_ts.setProbFilter(probfilter)

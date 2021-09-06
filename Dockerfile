@@ -32,7 +32,7 @@ RUN tar -xvjf /opt/irix-root.6.5.30.tar.bz2 -C /opt/irix-root
 FROM sgug as sgug_srpms
 
 WORKDIR /opt/sgug
-RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.6beta/sgug-rse-srpms-0.0.6beta.tar.gz
+RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.7beta/sgug-rse-srpms-0.0.7beta.tar.gz
 RUN tar -xvf sgug-rse-srpms*.tar.gz
 
 # #-------------------------
@@ -52,9 +52,9 @@ FROM sgug_binutils as sgug_gcc
 
 COPY files/patch_gcc.sh /opt/sgug/patch_gcc.sh
 COPY files/build_gcc.sh /opt/sgug/build_gcc.sh
-COPY --from=sgug_srpms /opt/sgug/SRPMS/gcc-9.2*.sgug.src.rpm /opt/sgug/gcc-9.2.0-1.sgug.src.rpm
+COPY --from=sgug_srpms /opt/sgug/SRPMS/gcc-9.2.0-4.sgug.src.rpm /opt/sgug/gcc-9.2.0-4.sgug.src.rpm
 RUN chmod +x /opt/sgug/*.sh && \
-    rpm -Uvh /opt/sgug/gcc-9.2.0-1.sgug.src.rpm && \
+    rpm -Uvh /opt/sgug/gcc-9.2.0-4.sgug.src.rpm && \
     tar xvzf /root/rpmbuild/SOURCES/gcc-9.2*.tar.gz -C /root/rpmbuild/SOURCES && \
     /opt/sgug/patch_gcc.sh && \
     /opt/sgug/build_gcc.sh  

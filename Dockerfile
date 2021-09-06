@@ -6,9 +6,8 @@ RUN dnf -y install \
 	gcc-c++ make automake \
 	gmp-devel mpfr-devel libmpc-devel \
 	bzip2 \
-	texi2html texinfo \
-	distcc \
-	cmake
+	texinfo \
+	distcc
 
 FROM base as sgug
 RUN mkdir -p /opt/sgug && \

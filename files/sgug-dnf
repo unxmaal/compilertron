@@ -1,0 +1,2 @@
+#!/bin/sh
+exec dnf -c /opt/irix/sgug/etc/sgug-dnf.conf $*

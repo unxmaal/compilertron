@@ -1,2 +1,0 @@
-#!/bin/sh
-exec dnf -c /opt/sgug/sgug-dnf.conf $*

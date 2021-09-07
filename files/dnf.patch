@@ -1,5 +1,5 @@
---- /usr/lib/python3.9/site-packages/dnf/base.py.orig	2021-09-06 06:52:03.630712863 +0000
-+++ /usr/lib/python3.9/site-packages/dnf/base.py	2021-09-06 06:52:15.740712773 +0000
+--- /usr/lib/python3.7/site-packages/dnf/base.py.orig	2021-09-06 06:52:03.630712863 +0000
++++ /usr/lib/python3.7/site-packages/dnf/base.py	2021-09-06 06:52:15.740712773 +0000
 @@ -615,6 +615,7 @@
  
          if self.conf.ignorearch:

@@ -1,6 +1,8 @@
 #-------------------------
 # Use fedora 31; latest fedora has a glibc too new for Ubuntu 20.04
-FROM fedora:31 as base
+FROM fedora:33 as base
+
+RUN dnf -y update && dnf -y install bzip2
 
 #-------------------------
 # Download everything up-front, to avoid untarring and everything in the various layers
@@ -20,7 +22,6 @@ ARG sgug_selfhoster_url=${sgug_base_url}/sgug-rse-selfhoster-${sgug_version}.tar
 RUN curl -Lf ${irix_root_url} -o /tmp/irix-root.tar.bz2
 RUN curl -Lf ${sgug_srpms_url} -o /tmp/sgug-srpms.tar.gz
 RUN curl -Lf ${sgug_selfhoster_url} -o /tmp/sgug-selfhoster.tar.gz
-RUN dnf -y install bzip2
 RUN mkdir -p /tmp/irix-root && tar -xaf /tmp/irix-root.tar.bz2 -C /tmp/irix-root
 RUN tar -xaf /tmp/sgug-selfhoster.tar.gz -C /tmp/irix-root/usr
 RUN tar -xaf /tmp/sgug-srpms.tar.gz -C /tmp --wildcards "SRPMS/binutils-2*" "SRPMS/gcc-9*"
@@ -29,12 +30,10 @@ RUN tar -xaf /tmp/sgug-srpms.tar.gz -C /tmp --wildcards "SRPMS/binutils-2*" "SRP
 # Now start building the actual image
 FROM base as sgug_base
 
-RUN dnf -y update && \
-    dnf -y install \
+RUN dnf -y install \
 	@development-tools \
 	gcc-c++ make automake \
 	gmp-devel mpfr-devel libmpc-devel \
-	bzip2 \
 	texinfo \
     rsync \
 	distcc-server
@@ -109,34 +108,50 @@ COPY files/sgug-dnf.conf /opt/irix/sgug/etc/sgug-dnf.conf
 COPY files/dnf.patch /tmp/dnf.patch
 
 FROM sgug_env as sgug_env2
-RUN patch -d/ -p0 < /tmp/dnf.patch && rm /tmp/dnf.patch
+RUN cd /usr/lib/python3.? && patch -p4 < /tmp/dnf.patch && rm /tmp/dnf.patch
 # make a sgug-dnf script in here -- sgug-dnf just runs dnf pointing to sgug-dnf.conf
 COPY files/sgug-dnf /opt/irix/sgug/bin
+
+# Set up RPM & dnf
+WORKDIR /opt/irix/root
 
 # We need to upgrade the database to sqlite format, since dnf only opens bdb in read-only mode
 # RPM has a bug here -- it screws up --root handling with --rebuilddb, and forgets to put in
 # the --root when it finally renames the new dir; so it tries to rename from the wrong location
 # and that wrong location is on a different docker overlay, so rename won't work.  Doing
 # the upgrade in /tmp works though.
-#  --- NOTE -- not necessary for fedora 31, but is for later (34?)
-#
-#RUN cp -r /opt/irix/root/usr/sgug/var/lib/rpm /tmp && \
-#    rpm --dbpath /tmp/rpm --rebuilddb && \
-#    rm -rf /opt/irix/root/usr/sgug/var/lib/rpm && \
-#    mv /tmp/rpm /opt/irix/root/usr/sgug/var/lib/rpm
+# -- only for Fedora 33 and beyond, however berkeley db seems to have endianness issues
+RUN cp -r usr/sgug/var/lib/rpm /tmp && \
+    rpm --dbpath /tmp/rpm --rebuilddb && \
+    rm -rf usr/sgug/var/lib/rpm && \
+    mv /tmp/rpm usr/sgug/var/lib/rpm
+
+# The rpm root is the irix root -- /opt/irix/root (not /usr/sgug inside there).
+# However the rpm database does not live rooted there, it lives in /opt/irix/root/usr/sgug/var/lib/rpm.
+# There's no equivalent to rpm's --dbpath to dnf, so instead we just make a bunch of symlink and move on.
+RUN mkdir -p etc lib var/lib && \
+	ln -sf ../usr/sgug/lib/rpm lib && \
+	ln -sf ../usr/sgug/lib/sgugrse-release lib && \
+	ln -sf ../../usr/sgug/var/lib/rpm var/lib && \
+	ln -sf ../usr/sgug/etc/yum.repos.d etc && \
+	ln -sf ../usr/sgug/etc/os-release etc && \
+	ln -sf ../usr/sgug/etc/sgug-release etc && \
+	ln -sf ../usr/sgug/etc/sgugrse-release etc && \
+	ln -sf ../usr/sgug/etc/system-release etc && \
+	ln -sf ../usr/sgug/etc/system-release-cpe etc
 
 # FIXME -- should resolve what this should be in the selfhoster tarball
 # toggle some enabled bits, first entry only (so we don't enable source rpms)
-RUN sed -i '0,/enabled=1/s//enabled=0/' /opt/irix/root/usr/sgug/etc/yum.repos.d/sgugrselocal.repo
-RUN sed -i '0,/enabled=0/s//enabled=1/' /opt/irix/root/usr/sgug/etc/yum.repos.d/sgugrse.repo
+RUN sed -i '0,/enabled=1/s//enabled=0/' usr/sgug/etc/yum.repos.d/sgugrselocal.repo
+RUN sed -i '0,/enabled=0/s//enabled=1/' usr/sgug/etc/yum.repos.d/sgugrse.repo
+
+WORKDIR /tmp
+
+# Remove the symlink, in preparation for the entry script to sort it out
+RUN rm /opt/irix
 
 COPY files/entry.sh /opt/irix-base/sgug/etc/entry.sh
 RUN chmod +x /opt/irix-base/sgug/etc/entry.sh
-
-# Finally remove the symlink, in preparation for the entry script to sort it out
-RUN rm /opt/irix
-
-WORKDIR /tmp
 
 ENV LD_LIBRARY_PATH="/opt/irix/sgug/lib:/opt/irix/sgug/usr/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
 ENV PATH="/opt/irix/sgug/bin:/opt/irix/sgug/usr/bin:${PATH}"

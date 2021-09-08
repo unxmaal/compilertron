@@ -140,6 +140,14 @@ RUN mkdir -p etc lib var/lib && \
 	ln -sf ../usr/sgug/etc/system-release etc && \
 	ln -sf ../usr/sgug/etc/system-release-cpe etc
 
+# HACK -- we should really just build libstdc++ with gcc; the build here
+# seems to look in slightly different locations than the actual built on-disk location.
+# But we just hack up some symlinks for the include files; you'll still need -L for
+# the libs
+RUN mkdir -p /opt/irix/sgug/mips-sgi-irix6.5/include && \
+    ln -s /opt/irix/root/usr/sgug/include/c++ /opt/irix/sgug/mips-sgi-irix6.5/include && \
+    ln -s 9 /opt/irix/sgug/mips-sgi-irix6.5/include/9.2.0
+
 # FIXME -- should resolve what this should be in the selfhoster tarball
 # toggle some enabled bits, first entry only (so we don't enable source rpms)
 RUN sed -i '0,/enabled=1/s//enabled=0/' usr/sgug/etc/yum.repos.d/sgugrselocal.repo

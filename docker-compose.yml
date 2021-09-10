@@ -10,7 +10,7 @@ services:
       - 3632:3632
       - 8186:8186
     # Uncomment these two lines to set up a local cross compilation env
-    #volumes:
-    #  - /opt/irix:/opt/irix
+    volumes:
+      - /opt/irix:/opt/irix
 
 

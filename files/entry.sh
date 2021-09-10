@@ -18,7 +18,7 @@ fi
 
 echo Starting distccd
 export PREFIX=/opt/irix/sgug
-export DISTCCD_PATH="${PREFIX}/mips-sgi-irix6.5/bin" 
+export DISTCCD_PATH="${PREFIX}/bin" 
 distccd \
     --daemon \
     --no-detach \

@@ -142,11 +142,12 @@ RUN mkdir -p etc lib var/lib && \
 
 # HACK -- we should really just build libstdc++ with gcc; the build here
 # seems to look in slightly different locations than the actual built on-disk location.
-# But we just hack up some symlinks for the include files; you'll still need -L for
-# the libs
+# Note that we set up the libstdc++ symlink even before you have it installed!
 RUN mkdir -p /opt/irix/sgug/mips-sgi-irix6.5/include && \
     ln -s /opt/irix/root/usr/sgug/include/c++ /opt/irix/sgug/mips-sgi-irix6.5/include && \
     ln -s 9 /opt/irix/sgug/mips-sgi-irix6.5/include/9.2.0
+RUN cd /opt/irix/sgug/mips-sgi-irix6.5/lib32 && \
+    ln -s /opt/irix/sgug/lib32/libstdc++.so .
 
 # FIXME -- should resolve what this should be in the selfhoster tarball
 # toggle some enabled bits, first entry only (so we don't enable source rpms)

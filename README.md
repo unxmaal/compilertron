@@ -58,6 +58,10 @@ Just create a container as normal from the image.  See `docker-compose.yaml` for
 
 Create `/opt/irix` locally, and attach it to `/opt/irix` in the container.  See `docker-compose.yml` for an example.  On first run, the container will copy its internal irix sysroot and compilers into `/opt/irix`, and from that point will use that directory to run from.  The compiler binaries in `/opt/irix/sgug/bin` are available outside of the container.
 
+Note -- you can map another directory from outside of the container to `/opt/irix` inside, e.g. `/foo/cheeseburger:/opt/irix`.  However, _you must
+make a symlink from /opt/irix to wherever the real directory is_.  The `/opt/irix` paths are hardcoded into a sysroot in the compiler; if you don't
+do this, you'll have to pass sysroot and a bunch of other compile flags, and you don't want to have to do that.
+
 ### Installing new packages
 
 The `sgug-dnf` script *inside the container* should be used to install new packages.  They will be installed to the `/opt/irix/root/usr/sgug` directory; in other words, in the normal location in the `/opt/irix/root` sysroot.  Example:

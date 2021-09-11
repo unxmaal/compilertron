@@ -1,105 +1,169 @@
-FROM debian:buster as base
-
-RUN apt-get -y update &&\
-    apt-get -y install build-essential \
-    bison \
-    flex \
-    libgmp-dev \
-    libmpfr-dev \
-    libmpc-dev \
-    parted \
-    texinfo \
-    git \
-    unzip \
-    openssh-server \
-    autoconf \
-    gettext \
-    distcc \
-    rpm \
-    tree \
-    vim \
-    file
 #-------------------------
-FROM base as sgug
-RUN mkdir -p /opt/sgug && \
-    mkdir -p /opt/irix-root
+# Use fedora 31; latest fedora has a glibc too new for Ubuntu 20.04
+FROM fedora:33 as base
 
-WORKDIR /opt
-RUN curl -OL http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2
-RUN tar -xvjf /opt/irix-root.6.5.30.tar.bz2 -C /opt/irix-root
+RUN dnf -y update && dnf -y install bzip2
 
 #-------------------------
-FROM sgug as sgug_srpms
+# Download everything up-front, to avoid untarring and everything in the various layers
+# download-base will contain the irix root (with sgug files) in /tmp/irix-root,
+# and the binutils and gcc SRPMS in /tmp/SRPMS/*
+FROM base as download-base
 
-WORKDIR /opt/sgug
-RUN curl -OL https://github.com/sgidevnet/sgug-rse/releases/download/v0.0.7beta/sgug-rse-srpms-0.0.7beta.tar.gz
-RUN tar -xvf sgug-rse-srpms*.tar.gz
+# Where to download the root filesystem
+ARG irix_root_url=http://mirror.larbob.org/compilertron/irix-root.6.5.30.tar.bz2
+# What sgug version to use for constructing release files
+ARG sgug_version=0.0.7beta
+ARG sgug_base_url=https://github.com/sgidevnet/sgug-rse/releases/download/v${sgug_version}
+# can override these to download from a specific location
+ARG sgug_srpms_url=${sgug_base_url}/sgug-rse-srpms-${sgug_version}.tar.gz
+ARG sgug_selfhoster_url=${sgug_base_url}/sgug-rse-selfhoster-${sgug_version}.tar.gz
 
-# #-------------------------
-FROM sgug as sgug_binutils
+RUN curl -Lf ${irix_root_url} -o /tmp/irix-root.tar.bz2
+RUN curl -Lf ${sgug_srpms_url} -o /tmp/sgug-srpms.tar.gz
+RUN curl -Lf ${sgug_selfhoster_url} -o /tmp/sgug-selfhoster.tar.gz
+RUN mkdir -p /tmp/irix-root && tar -xaf /tmp/irix-root.tar.bz2 -C /tmp/irix-root
+RUN tar -xaf /tmp/sgug-selfhoster.tar.gz -C /tmp/irix-root/usr
+RUN tar -xaf /tmp/sgug-srpms.tar.gz -C /tmp --wildcards "SRPMS/binutils-2*" "SRPMS/gcc-9*"
 
-COPY files/make_binutils.sh /opt/sgug/make_binutils.sh
-COPY files/patch_binutils.sh /opt/sgug/patch_binutils.sh
-COPY --from=sgug_srpms /opt/sgug/SRPMS/binutils-2.23.2-25.sgug.src.rpm /opt/sgug/binutils-2.23.2-25.sgug.src.rpm
-RUN chmod +x /opt/sgug/*.sh && \
-    rpm -Uvh /opt/sgug/binutils-2.23.2-25.sgug.src.rpm && \
-    tar xvzf /root/rpmbuild/SOURCES/binutils-2.23.2.tar.gz -C /root/rpmbuild/SOURCES && \
-    /opt/sgug/patch_binutils.sh && \
-    /opt/sgug/make_binutils.sh
+#-------------------------
+# Now start building the actual image
+FROM base as sgug_base
+
+RUN dnf -y install \
+	@development-tools \
+	gcc-c++ make automake \
+	gmp-devel mpfr-devel libmpc-devel \
+	texinfo \
+    rsync \
+	distcc-server
+
+RUN mkdir -p /opt/irix-base/sgug && \
+    mkdir -p /opt/tmp && \
+    ln -s /opt/irix-base /opt/irix
+
+COPY --from=download-base /tmp/irix-root /opt/irix/root
+
+#-------------------------
+FROM sgug_base as sgug_binutils
+
+# Note: assumption in build script that this is binutils-2.23.2
+COPY files/build_binutils.sh /tmp/build_binutils.sh
+COPY --from=download-base /tmp/SRPMS/binutils-2*.src.rpm /tmp/binutils.sgug.src.rpm
+WORKDIR /tmp
+RUN chmod +x *.sh && \
+    rpm -Uvh binutils.sgug.src.rpm && \
+    tar xvzf /root/rpmbuild/SOURCES/binutils-2*.tar.gz -C /root/rpmbuild/SOURCES && \
+    ./build_binutils.sh
+
+# Note:
+#  binutils installs its own binaries in:
+#    $prefix/bin (as $target-$tool)
+#    $prefix/$target/bin (as $tool)
+#  it installs its own linker scripts in
+#    $prefix/$target/lib
+#  it installs _target_ libraries (in this case) in
+#    $prefix/$target/lib32
 
 #-------------------------
 FROM sgug_binutils as sgug_gcc
 
-COPY files/patch_gcc.sh /opt/sgug/patch_gcc.sh
-COPY files/build_gcc.sh /opt/sgug/build_gcc.sh
-COPY --from=sgug_srpms /opt/sgug/SRPMS/gcc-9.2.0-4.sgug.src.rpm /opt/sgug/gcc-9.2.0-4.sgug.src.rpm
-RUN chmod +x /opt/sgug/*.sh && \
-    rpm -Uvh /opt/sgug/gcc-9.2.0-4.sgug.src.rpm && \
+# Note: assumption in build script that this is gcc-9.2.0-20190812
+COPY files/build_gcc.sh /tmp/build_gcc.sh
+# FIXME -- once I figure out where this patch file comes from this should go upstream
+COPY files/gcc.sgifixes.patch /tmp/gcc.sgifixes.patch
+COPY --from=download-base /tmp/SRPMS/gcc-9.2*.sgug.src.rpm /tmp/gcc.sgug.src.rpm
+WORKDIR /tmp
+RUN chmod +x *.sh && \
+    rpm -Uvh gcc.sgug.src.rpm && \
+    cp /tmp/gcc.sgifixes.patch /root/rpmbuild/SOURCES && \
     tar xvzf /root/rpmbuild/SOURCES/gcc-9.2*.tar.gz -C /root/rpmbuild/SOURCES && \
-    /opt/sgug/patch_gcc.sh && \
-    /opt/sgug/build_gcc.sh  
+    ./build_gcc.sh  
 
 #-------------------------
-FROM base as sgug_distcc
+FROM sgug_base as sgug_distcc
 
-#FROM  sgug_gcc as sgug_distcc
-COPY --from=sgug_gcc /opt/sgug /opt/sgug
-COPY --from=sgug_gcc /opt/irix-root /opt/irix-root
+# Copy in built binutils and gcc -- leaving behind all the build steps
+COPY --from=sgug_gcc /opt/irix-base/sgug /opt/irix-base/sgug
 
-COPY files/entry.sh /opt/sgug/entry.sh
-RUN chmod +x /opt/sgug/entry.sh && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /opt/sgug/mips-sgi-irix6.5/bin/cc && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-addr2line /opt/sgug/mips-sgi-irix6.5/bin/addr2line && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++ /opt/sgug/mips-sgi-irix6.5/bin/c++ && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++filt /opt/sgug/mips-sgi-irix6.5/bin/c++filt && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-cpp /opt/sgug/mips-sgi-irix6.5/bin/cpp && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-elfedit /opt/sgug/mips-sgi-irix6.5/bin/elfedit && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-g++ /opt/sgug/mips-sgi-irix6.5/bin/g++ && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /opt/sgug/mips-sgi-irix6.5/bin/gcc && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc-9.2.0 /opt/sgug/mips-sgi-irix6.5/bin/gcc-9.2.0 && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov /opt/sgug/mips-sgi-irix6.5/bin/gcov && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-dump /opt/sgug/mips-sgi-irix6.5/bin/gcov-dump && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-tool /opt/sgug/mips-sgi-irix6.5/bin/gcov-tool && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-readelf /opt/sgug/mips-sgi-irix6.5/bin/readelf && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-size /opt/sgug/mips-sgi-irix6.5/bin/size && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-strings /opt/sgug/mips-sgi-irix6.5/bin/strings && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-cc && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-addr2line /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-addr2line && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++ /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-c++ && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-c++filt /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-c++filt && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-cpp /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-cpp && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-elfedit /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-elfedit && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-g++ /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-g++ && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcc && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcc-9.2.0 /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcc-9.2.0 && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-dump /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov-dump && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-gcov-tool /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-gcov-tool && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-readelf /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-readelf && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-size /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-size && \
-    ln -s /opt/sgug/bin/mips-sgi-irix6.5-strings /opt/sgug/mips-sgi-irix6.5/bin/mips-sgi-irix6.5-strings && \
-    update-distcc-symlinks &&\
-    ln -s -b /opt/sgug/bin/mips-sgi-irix6.5-* /usr/lib/distcc/
+# We now have all the tools in bin/mips-sgi-irix6.5-*
+# We also have a few tools (binutils) in mips-sgi-irix6.5/bin/*
+# symlink the ones from bin/mips-sgi-irix6.5 to the bin dir without a prefix,
+# because we point DISTCCD_PATH to this directory so it can find gcc as "gcc"
+RUN \
+     for f in /opt/irix/sgug/bin/mips-sgi-irix6.5-* ; do \
+         tool=`echo -n $f | sed 's,.*mips-sgi-irix6.5-,,'` ; \
+         ln -sf $f /opt/irix/sgug/mips-sgi-irix6.5/bin/$tool ; \
+     done
+# I don't think this is necessary, but for correctness let's do it; mirrors update-distcc-symlinks
+RUN ln -s /opt/irix/sgug/bin/mips-sgi-irix6.5-{gcc,g++,gcc-9.2.0,c++,cpp} /usr/lib/distcc
+
+FROM sgug_distcc as sgug_env
+
+# dnf and/or rpm look for the pki key in a location that ignores the root; whatever.
+RUN mkdir -p /usr/sgug/etc && cp -r /opt/irix/root/usr/sgug/etc/pki /usr/sgug/etc
+# the dnf configuration for SGUG/mips
+COPY files/sgug-dnf.conf /opt/irix/sgug/etc/sgug-dnf.conf
+# hacky hack hack -- make ignorearch also do ignoreos
+COPY files/dnf.patch /tmp/dnf.patch
+
+FROM sgug_env as sgug_env2
+RUN cd /usr/lib/python3.? && patch -p4 < /tmp/dnf.patch && rm /tmp/dnf.patch
+# make a sgug-dnf script in here -- sgug-dnf just runs dnf pointing to sgug-dnf.conf
+COPY files/sgug-dnf /opt/irix/sgug/bin
+
+# Set up RPM & dnf
+WORKDIR /opt/irix/root
+
+# We need to upgrade the database to sqlite format, since dnf only opens bdb in read-only mode
+# RPM has a bug here -- it screws up --root handling with --rebuilddb, and forgets to put in
+# the --root when it finally renames the new dir; so it tries to rename from the wrong location
+# and that wrong location is on a different docker overlay, so rename won't work.  Doing
+# the upgrade in /tmp works though.
+# -- only for Fedora 33 and beyond, however berkeley db seems to have endianness issues
+RUN cp -r usr/sgug/var/lib/rpm /tmp && \
+    rpm --dbpath /tmp/rpm --rebuilddb && \
+    rm -rf usr/sgug/var/lib/rpm && \
+    mv /tmp/rpm usr/sgug/var/lib/rpm
+
+# The rpm root is the irix root -- /opt/irix/root (not /usr/sgug inside there).
+# However the rpm database does not live rooted there, it lives in /opt/irix/root/usr/sgug/var/lib/rpm.
+# There's no equivalent to rpm's --dbpath to dnf, so instead we just make a bunch of symlink and move on.
+RUN mkdir -p etc lib var/lib && \
+	ln -sf ../usr/sgug/lib/rpm lib && \
+	ln -sf ../usr/sgug/lib/sgugrse-release lib && \
+	ln -sf ../../usr/sgug/var/lib/rpm var/lib && \
+	ln -sf ../usr/sgug/etc/yum.repos.d etc && \
+	ln -sf ../usr/sgug/etc/os-release etc && \
+	ln -sf ../usr/sgug/etc/sgug-release etc && \
+	ln -sf ../usr/sgug/etc/sgugrse-release etc && \
+	ln -sf ../usr/sgug/etc/system-release etc && \
+	ln -sf ../usr/sgug/etc/system-release-cpe etc
+
+# HACK -- we should really just build libstdc++ with gcc; the build here
+# seems to look in slightly different locations than the actual built on-disk location.
+# Note that we set up the libstdc++ symlink even before you have it installed!
+RUN mkdir -p /opt/irix/sgug/mips-sgi-irix6.5/include && \
+    ln -s /opt/irix/root/usr/sgug/include/c++ /opt/irix/sgug/mips-sgi-irix6.5/include && \
+    ln -s 9 /opt/irix/sgug/mips-sgi-irix6.5/include/9.2.0
+RUN mkdir -p /opt/irix/sgug/mips-sgi-irix6.5/lib32 && \
+    ln -s /opt/irix/sgug/lib32/libstdc++.so /opt/irix/sgug/mips-sgi-irix6.5/lib32
+
+# FIXME -- should resolve what this should be in the selfhoster tarball
+# toggle some enabled bits, first entry only (so we don't enable source rpms)
+RUN sed -i '0,/enabled=1/s//enabled=0/' usr/sgug/etc/yum.repos.d/sgugrselocal.repo
+RUN sed -i '0,/enabled=0/s//enabled=1/' usr/sgug/etc/yum.repos.d/sgugrse.repo
+
+WORKDIR /tmp
+
+# Remove the symlink, in preparation for the entry script to sort it out
+RUN rm /opt/irix
+
+COPY files/entry.sh /opt/irix-base/sgug/etc/entry.sh
+RUN chmod +x /opt/irix-base/sgug/etc/entry.sh
+
+ENV LD_LIBRARY_PATH="/opt/irix/sgug/lib:/opt/irix/sgug/usr/lib:/usr/local/lib:${LD_LIBRARY_PATH}"
+ENV PATH="/opt/irix/sgug/bin:/opt/irix/sgug/usr/bin:${PATH}"
 
 EXPOSE \  
     3632/tcp \
@@ -108,4 +172,4 @@ EXPOSE \
 HEALTHCHECK --interval=5m --timeout=3s \
   CMD curl -f http://0.0.0.0:8186/ || exit 1
 
-ENTRYPOINT [ "/opt/sgug/entry.sh" ]
+ENTRYPOINT [ "/opt/irix-base/sgug/etc/entry.sh" ]

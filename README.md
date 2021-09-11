@@ -29,7 +29,7 @@ can specify build args to get them from a different URL:
 
 ```
 docker build \
-    --tag irixenv \
+    --tag compilertron \
     --build-arg irix_root_url=http://myserver/sgi/irix-root.6.5.30.tar.bz2 \
     --build-arg sgug_srpms_url=http://myserver/sgi/sgug-rse-srpms-0.0.7beta.tar.gz \
     --build-arg sgug_selfhoster_url=http://myserver/sgi/sgug-rse-selfhoster-0.0.7beta.tar.gz \

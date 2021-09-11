@@ -1,9 +1,9 @@
 ---
 version: "2.1"
 services:
-  irixenv:
-    image: irixenv:latest
-    container_name: irixenv
+  compilertron:
+    image: unxmaal/compilertron:latest
+    container_name: compilertron
     healthcheck:
       disable: true
     ports:

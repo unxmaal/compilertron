@@ -9,8 +9,9 @@ services:
     ports:
       - 3632:3632
       - 8186:8186
-    # Uncomment these two lines to set up a local cross compilation env
-    volumes:
-      - /opt/irix:/opt/irix
+# Uncomment the next two lines to set up a local cross compilation env.  Make sure /opt/irix exists.
+#    volumes:
+#      - /opt/irix:/opt/irix
 
-
+# Note: it _must_ be /opt/irix, though you can map /foo/cheeseburger:/opt/irix as long as you also make a local
+# /opt/irix -> /foo/cheeseburger symlink
